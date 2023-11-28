@@ -46,6 +46,32 @@ app.post('/signup', jsonParser, (req, res) => {
     }
   });
 });
+
+app.post('/login', jsonParser, (req, res) => {
+  const { username } = req.body;
+  const { password } = req.body;
+
+  if (username && password) {
+    const qr = `
+    SELECT * FROM guest
+    WHERE username = '${username}'
+    AND password = '${password}';
+    `;
+    con.query(qr, [username, password], (err, result) => {
+      if (err) {
+        console.error(err);
+        res.send({ error: 'Login failed' });
+      } else if (result.length > 0) {
+        res.send({ success: 'Login successful' });
+      } else {
+        res.send({ error: 'Invalid username or password' });
+      }
+    });
+  } else {
+    res.send({ error: 'Username and password are required.' });
+  }
+});
+
 app.use((_req, res) => {
   // eslint-disable-next-line no-console
   console.log('Mrudula');
